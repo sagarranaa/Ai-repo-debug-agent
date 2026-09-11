@@ -1,0 +1,15 @@
+{
+  "status": "proposed",
+  "relative_path": "shop/checkout.py",
+  "explanation": "Removed the redundant coupon application in checkout. The function now forwards the raw subtotal to calculate_total, which already applies the coupon once. Also removed the unused apply_coupon import to keep imports clean.",
+  "source_hashes": {
+    "README.md": "7da51801af8bf62761b342e47c75cd265e286c5bd8116eb8dcfee04bc6981f57",
+    "shop/checkout.py": "b17687b937c9f3647e91b05a2a74472b3b9b5e36f3a0e09131568d6200e18cbc",
+    "shop/pricing.py": "a1b1bf0a340f3e47c0bc03b74167275d5cc240f9b7db4fe73fefdaa1dff57214",
+    "shop/coupons.py": "e326b760e411867b6a361ab554d70d993feea3c02f78f21c320476624af1f663",
+    "tests/test_checkout.py": "60f42564df6e78fbc45a40b29322d43cd6d34d560fd3f5ee7b11e549b0cbba88"
+  },
+  "new_content": "from shop.pricing import calculate_subtotal, calculate_total\n\n\ndef checkout(\n    items: list[dict],\n    coupon_code: str | None = None,\n) -> dict:\n    \"\"\"Return the cart subtotal and payable amount.\"\"\"\n\n    subtotal = calculate_subtotal(items)\n\n    total = calculate_total(\n        subtotal,\n        coupon_code,\n    )\n\n    return {\n        \"subtotal_paise\": subtotal,\n        \"total_paise\": total,\n    }\n",
+  "diff": "--- a/shop/checkout.py\n+++ b/shop/checkout.py\n@@ -1,4 +1,3 @@\n-from shop.coupons import apply_coupon\n from shop.pricing import calculate_subtotal, calculate_total\n \n \n@@ -10,17 +9,12 @@\n \n     subtotal = calculate_subtotal(items)\n \n-    adjusted_subtotal = apply_coupon(\n+    total = calculate_total(\n         subtotal,\n-        coupon_code,\n-    )\n-\n-    total = calculate_total(\n-        adjusted_subtotal,\n         coupon_code,\n     )\n \n     return {\n         \"subtotal_paise\": subtotal,\n         \"total_paise\": total,\n-    }+    }\n",
+  "verification": "Not applied or tested"
+}
